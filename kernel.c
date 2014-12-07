@@ -4,6 +4,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "timer.h"
+#include "gpio.h"
+
 static inline void mmio_write(uint32_t reg, uint32_t data)
 {
   uint32_t *ptr = (uint32_t*) reg;
@@ -136,6 +139,7 @@ void uart_puts(const char* str)
   uart_write((const unsigned char*) str, strlen(str));
 }
 
+
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
 #endif
@@ -147,6 +151,20 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags)
 
   uart_init();
   uart_puts("Hello, kernel World!\r\n");
+
+  SetGpioFunction(18,1);
+  SetGpioFunction(21,1);
+
+  while (true) {
+    SetGpio(18,1);
+    sleep(1000000);
+    SetGpio(21,1);
+    sleep(1000000);
+    SetGpio(18,0);
+    sleep(1000000);
+    SetGpio(21,0);
+    sleep(1000000);
+  }
 
   while ( true )
     uart_putc(uart_getc());
